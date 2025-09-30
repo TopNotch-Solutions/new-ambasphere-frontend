@@ -35,20 +35,20 @@ axiosInstance.interceptors.response.use(
           throw new Error('No refresh token available');
         }
 
-        const refreshResponse = await axiosInstance.post('/auth/refresh', {
+        const refreshResponse = await axiosInstance.post('/auth/refresh', {}, {
           headers: {
-            'Authorization': `${refreshToken}`,
+            'Authorization': `Bearer ${refreshToken}`,
           },
         });
 
-        const newToken = refreshResponse.data.accessToken;
+        const newToken = refreshResponse.data.token;
         const newRefreshToken = refreshResponse.data.refreshToken;
 
         localStorage.setItem('accessToken', newToken);
         localStorage.setItem('refreshToken', newRefreshToken);
 
-        axiosInstance.defaults.headers['Authorization'] = `${newToken}`;
-        originalRequest.headers['Authorization'] = `${newToken}`;
+        axiosInstance.defaults.headers['Authorization'] = `Bearer ${newToken}`;
+        originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         if(originalRequest.customName){

@@ -12,6 +12,7 @@ import Sidebar from "./components/global/Sidebar.jsx";
 import Login from "./pages/global/login/Login.jsx";
 import Landing from "./pages/global/landing/Landing.jsx";
 import Breadcrumb from "./components/global/Breadcrumb";
+import Unauthorized from "./pages/global/Unauthorized.jsx";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -79,6 +80,7 @@ function App() {
               {/* Global Routes */}
               <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/unauthorized" element={<Unauthorized />} />
               {PrivateRoutes()}
             </Routes>
           </main>

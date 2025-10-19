@@ -145,7 +145,10 @@ const UserDashboard = () => {
         </div>
 
         {currentUser.RoleID === 1 && <RoleSwitcher title="Admin" />}
-        {currentUser.RoleID === 1 && <div className="mb-2 mb-md-3"></div>}
+        {currentUser.RoleID === 9 && <RoleSwitcher title="Finance" />}
+        {currentUser.RoleID === 10 && <RoleSwitcher title="Warehouse" />}
+        {currentUser.RoleID === 11 && <RoleSwitcher title="Retail" />}
+        <div className="mb-2 mb-md-3"></div>
 
         {/* Learn More */}
         <div className="col-11 col-xl-8 rounded-3 shadow d-flex flex-column p-4 align-items-center mb-3 mb-xl-0">

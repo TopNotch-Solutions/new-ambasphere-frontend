@@ -12,9 +12,13 @@ const ProtectedRoute = ({ children, roles }) => {
     return <Navigate to="/" replace />;
   }
 
-  if (roles && !roles.includes(role)) {
-    console.log("Current role:  ",role)
-    return <Navigate to="/unauthorized" replace />;
+  if (roles) {
+    const numericRole = Number(role);
+    const allowed = roles.some((r) => Number(r) === numericRole);
+    if (!allowed) {
+      console.log("ProtectedRoute blocked - role:", role, "allowed:", roles);
+      return <Navigate to="/unauthorized" replace />;
+    }
   }
 
   return children;

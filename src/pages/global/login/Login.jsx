@@ -136,9 +136,18 @@ const Login = () => {
 
         // Ensure state update before navigation
         setTimeout(() => {
-          if (employee.RoleID === 8 || employee.RoleID === 3) {
+          if (employee.RoleID === 3) {
             navigate("/user/Dashboard");
-          } else {
+          } else if (employee.RoleID === 9) {
+            navigate("/finance/Dashboard")
+          }
+          else if (employee.RoleID === 10) {
+            navigate("/warehouse/dashboard")
+          }
+          else if (employee.RoleID === 11) {
+            navigate("/retail/dashboard")
+          }
+          else {
             navigate("/admin/Dashboard");
           }
         }, 0);

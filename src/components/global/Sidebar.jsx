@@ -75,6 +75,27 @@ const Sidebar = ({ openSidebarToggle, OpenSidebar }) => {
       "/user/SelfHelp/Wellness": "15",
       "/user/SelfHelp/WorkEnvironment": "16",
       "/Settings": "9",
+
+      // Finance
+      "/finance/dashboard": "f1",
+      "/finance/approvals": "f2",
+      "/finance/payment-approval": "f3",
+      "/finance/asset-code": "f4",
+      "/finance/profile": "f5",
+
+      // Warehouse
+      "/warehouse/dashboard": "w1",
+      "/warehouse/reservation": "w2",
+      "/warehouse/my-reservations": "w3",
+      "/warehouse/control-cards": "w4",
+      "/warehouse/profile": "w5",
+
+      // Retail
+      "/retail/dashboard": "r1",
+      "/retail/reservation": "r2",
+      "/retail/my-reservations": "r7",
+      "/retail/control-cards": "r8",
+      "/retail/profile": "r6",
     };
 
     setNavList(pathToKeyMap[location.pathname]);
@@ -355,6 +376,93 @@ const Sidebar = ({ openSidebarToggle, OpenSidebar }) => {
     </>
   );
 
+  const renderFinanceLinks = () => (
+    <>
+      {[ 
+        { to: "/finance/dashboard", icon: <DashboardIcon />, label: "Dashboard", key: "f1" },
+        { to: "/finance/approvals", icon: <AssignmentIcon />, label: "Renewal Verification", key: "f2" },
+        { to: "/finance/payment-approval", icon: <MonetizationOnIcon />, label: "Payment Approval", key: "f3" },
+        { to: "/finance/asset-code", icon: <MonetizationOnIcon />, label: "Asset Code Assignment", key: "f4" },
+        { to: "/finance/profile", icon: <AccountCircleIcon />, label: "Profile", key: "f5" },
+      ].map((link) => (
+        <NavLink
+          key={link.key}
+          to={link.to}
+          onClick={() => {
+            handleNavLinkClick();
+            setNavList(link.key);
+          }}
+        >
+          <li
+            className={classNames("sidebar-list-item", {
+              backNav: navList === link.key,
+            })}
+          >
+            {link.icon} {link.label}
+          </li>
+        </NavLink>
+      ))}
+    </>
+  );
+
+  const renderWarehouseLinks = () => (
+    <>
+      {[ 
+        { to: "/warehouse/dashboard", icon: <DashboardIcon />, label: "Dashboard", key: "w1" },
+        { to: "/warehouse/reservation", icon: <AssignmentIcon />, label: "Device Allocations", key: "w2" },
+        { to: "/warehouse/my-reservations", icon: <DevicesOtherIcon />, label: "My Reservations", key: "w3" },
+        { to: "/warehouse/control-cards", icon: <AssignmentIcon />, label: "Control Cards", key: "w4" },
+        { to: "/warehouse/profile", icon: <AccountCircleIcon />, label: "Profile", key: "w5" },
+      ].map((link) => (
+        <NavLink
+          key={link.key}
+          to={link.to}
+          onClick={() => {
+            handleNavLinkClick();
+            setNavList(link.key);
+          }}
+        >
+          <li
+            className={classNames("sidebar-list-item", {
+              backNav: navList === link.key,
+            })}
+          >
+            {link.icon} {link.label}
+          </li>
+        </NavLink>
+      ))}
+    </>
+  );
+
+  const renderRetailLinks = () => (
+    <>
+      {[ 
+        { to: "/retail/dashboard", icon: <DashboardIcon />, label: "Dashboard", key: "r1" },
+        { to: "/retail/reservation", icon: <AssignmentIcon />, label: "Device Allocations", key: "r2" },
+        { to: "/retail/my-reservations", icon: <DevicesOtherIcon />, label: "My Reservations", key: "r7" },
+        { to: "/retail/control-cards", icon: <AssignmentIcon />, label: "Control Cards", key: "r8" },
+        { to: "/retail/profile", icon: <AccountCircleIcon />, label: "Profile", key: "r6" },
+      ].map((link) => (
+        <NavLink
+          key={link.key}
+          to={link.to}
+          onClick={() => {
+            handleNavLinkClick();
+            setNavList(link.key);
+          }}
+        >
+          <li
+            className={classNames("sidebar-list-item", {
+              backNav: navList === link.key,
+            })}
+          >
+            {link.icon} {link.label}
+          </li>
+        </NavLink>
+      ))}
+    </>
+  );
+
   return (
     <aside
       id="sidebar"
@@ -385,6 +493,9 @@ const Sidebar = ({ openSidebarToggle, OpenSidebar }) => {
 
         {role === 3 && renderUserLinks()}
         {role === 8 && renderTempUserLinks()}
+        {role === 9 && renderFinanceLinks()}
+        {role === 10 && renderWarehouseLinks()}
+        {role === 11 && renderRetailLinks()}
         {/* <NavLink
           to="/Settings"
           onClick={() => {

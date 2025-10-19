@@ -596,6 +596,14 @@ const AddEmployee = ({ open, handleClose, mode = "", employeeData = {} }) => {
                 >
                   <MenuItem value="1">Admin</MenuItem>
                   <MenuItem value="3">User</MenuItem>
+
+                  <MenuItem value="9">Fixed Asset Team</MenuItem>
+                  <MenuItem value="5">Billing Team</MenuItem>
+                  <MenuItem value="6">Key Accounts Supervisor</MenuItem>
+                  <MenuItem value="7">ER Team</MenuItem>
+                  <MenuItem value="10">Warehouse Team</MenuItem>
+                  <MenuItem value="11">Retail Store Supervisor</MenuItem>
+                  
                 </Select>
                 {errors.RoleID && (
                   <FormHelperText>{errors.RoleID}</FormHelperText>

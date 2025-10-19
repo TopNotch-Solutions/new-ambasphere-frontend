@@ -28,9 +28,11 @@ const HandsetAdminVoucher = ({ open, handleClose, userData, role }) => {
   // State for editable fields
   const [collectionDate, setCollectionDate] = useState("");
   const [renewalDate, setRenewalDate] = useState("");
-  const [fixedAssetCode, setFixedAssetCode] = useState(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [status, setStatus] = useState(""); // Assuming 'Pending' is default or comes from userData
+  
+  // Fixed Asset Code is read-only, comes from userData
+  const fixedAssetCode = userData?.handset?.FixedAssetCode || null;
 
   // State for read-only fields (initialized from userData or current user)
   const [handsetName, setHandsetName] = useState(
@@ -62,7 +64,6 @@ const HandsetAdminVoucher = ({ open, handleClose, userData, role }) => {
       setEmployeeCode(userData.employee.EmployeeCode || "");
       setHandsetName(userData.handset.HandsetName || "");
       setPrice(userData.handset.DevicePrice || "");
-      setFixedAssetCode(userData.handset.FixedAssetCode || "");
       setMrNumber(userData.handset.MRNumber || ""); // Set MR Number from userData
       // Set RequestDate, CollectionDate, RenewalDate if they exist in userData
       if (userData.handset.RequestDate) {
@@ -162,7 +163,6 @@ const HandsetAdminVoucher = ({ open, handleClose, userData, role }) => {
 
     // Prepare payload for update
     const payload = {
-      FixedAssetCode: fixedAssetCode,
       EmployeeCode: employeeCode, // Should come from currentUser, read-only // Read-only, calculated
       MRNumber: mrNumber, // Read-only
       CollectionDate: formatDateForSubmission(collectionDate), // Editable
@@ -482,15 +482,14 @@ const HandsetAdminVoucher = ({ open, handleClose, userData, role }) => {
                 </Box>
               </Box>
 
-              {/* Fixed Asset Code - Current value is static, make it editable or ensure it comes from data */}
+              {/* Fixed Asset Code - Read-only field, assigned by Finance team only */}
               <Box flex="1 1 48%">
                 <TextField
                   fullWidth
                   label="Fixed Asset Code"
-                  value={fixedAssetCode} 
-                  onChange={(e) =>{
-                    setFixedAssetCode(e.target.value);
-                    setHasChanges(true);
+                  value={fixedAssetCode || "Not Assigned"} 
+                  InputProps={{
+                    readOnly: true,
                   }}
                   className="print-hidden"
                   sx={{
@@ -498,7 +497,12 @@ const HandsetAdminVoucher = ({ open, handleClose, userData, role }) => {
                     "@media print": {
                       display: "none",
                     },
+                    "& .MuiInputBase-input": {
+                      color: fixedAssetCode ? 'text.primary' : 'text.secondary',
+                      fontStyle: fixedAssetCode ? 'normal' : 'italic'
+                    }
                   }}
+                  helperText="Assigned by Finance team only"
                 />
                 <Box
                   className="print-text-field-display show-on-print"
@@ -513,7 +517,7 @@ const HandsetAdminVoucher = ({ open, handleClose, userData, role }) => {
                     Fixed Asset Code:
                   </Typography>
                   <Typography variant="body1" className="print-text-field-value">
-                    {fixedAssetCode || "."} 
+                    {fixedAssetCode || "Not Assigned"} 
                   </Typography>
                 </Box>
               </Box>

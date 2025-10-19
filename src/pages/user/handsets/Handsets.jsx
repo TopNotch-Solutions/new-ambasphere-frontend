@@ -6,12 +6,14 @@ import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import PostAddIcon from "@mui/icons-material/PostAdd";
+import ShareIcon from "@mui/icons-material/Share";
 import { useSelector, useDispatch } from "react-redux";
 import Tooltip from '@mui/material/Tooltip';
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import axiosInstance from "../../../utils/axiosInstance";
 import BenefitVoucher from "../../../components/global/BenefitVoucher";
 import HandsetVoucher from "../../../components/global/HandsetVoucher";
+import ShareIMEIModal from "../../../components/user/ShareIMEIModal";
 import formatDate from "../../../components/global/dateFormatter";
 import Swal from "sweetalert2";
 
@@ -22,6 +24,8 @@ const UserHandsets = () => {
   const [userData, setUserData] = useState(null);
   const [dataAllocation, setDataAllocation] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [imeiModalOpen, setImeiModalOpen] = useState(false);
+  const [selectedHandsetForIMEI, setSelectedHandsetForIMEI] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const { role } = useSelector((state) => state.auth);
@@ -37,7 +41,8 @@ const UserHandsets = () => {
         );
         const handsetData = Array.isArray(response.data) ? response?.data : [];
         setDataAllocation(handsetData);
-        console.log("wewewe ", response.data);
+        console.log("Handset data received:", response.data);
+        console.log("First handset RenewalVerified:", handsetData[0]?.RenewalVerified);
       } catch (error) {
         // console.log(error);
       } finally {
@@ -71,6 +76,38 @@ const UserHandsets = () => {
     }
   };
   const handleClose = () => setModalOpen(false);
+
+  const handleOpenIMEIModal = (handset) => {
+    setSelectedHandsetForIMEI(handset);
+    setImeiModalOpen(true);
+  };
+
+  const handleCloseIMEIModal = () => {
+    setImeiModalOpen(false);
+    setSelectedHandsetForIMEI(null);
+  };
+
+  const handleShareIMEI = async (handsetId, imeiNumber) => {
+    try {
+      const response = await axiosInstance.post(`/handsets/share-imei/${handsetId}`, {
+        imeiNumber: imeiNumber
+      });
+
+      if (response.data.success) {
+        Swal.fire({
+          icon: "success",
+          title: "IMEI Shared Successfully!",
+          text: `Your device IMEI has been shared with the admin team. ${response.data.data.adminNotified} admin members have been notified.`,
+        }).then(() => {
+          // Refresh the data
+          window.location.reload();
+        });
+      }
+    } catch (error) {
+      console.error("Error sharing IMEI:", error);
+      throw new Error(error.response?.data?.message || "Failed to share IMEI number");
+    }
+  };
 
   const handleHandsetDelection = async (id) =>{
     Swal.fire({
@@ -137,21 +174,23 @@ const UserHandsets = () => {
     { field: "RequestDate", headerName: "Requested Date", width: 180 },
     { field: "AllocationDate", headerName: "Collected Date", width: 180 },
     { field: "NewAllocationDate", headerName: "New Renewal Date", width: 180 },
-    { field: "Status", headerName: "Status", width: 100 ,},
+    { field: "Status", headerName: "Status", width: 100 },
+    { field: "RenewalVerified", headerName: "Renewal Verified", width: 140 },
+    { field: "IMEINumber", headerName: "IMEI Number", width: 150 },
     {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
               field: "actions",
               type: "actions",
               headerName: "Actions",
-              width: 100,
+              width: 150,
               cellClassName: "actions",
               getActions: ({ row }) => { // Destructure 'row' from the params object
           const actions = [];
     
-          // Only add the delete action if approvalStatus is 'Pending'
+          // Add delete action if status is 'Pending'
           if (row.Status === "Pending") {
             console.log("Approval status: ",row.Status)
             actions.push(
-              <Tooltip title={`Delete handset`} arrow> {/* Add Tooltip here */}
+              <Tooltip title={`Delete handset`} arrow>
                 <GridActionsCellItem
                   icon={<RemoveCircleIcon />}
                   label="delete"
@@ -162,25 +201,61 @@ const UserHandsets = () => {
               </Tooltip>
             );
           }
+
+          // Add share IMEI action if renewal is verified
+          console.log("Row data for actions:", {
+            id: row.id,
+            RenewalVerified: row.RenewalVerified,
+            Status: row.Status,
+            IMEINumber: row.IMEINumber,
+            shouldShowIMEI: (row.RenewalVerified === true || row.RenewalVerified === "Yes") && 
+                           (row.Status === "Renewal Verified" || row.Status === "Probation Verified")
+          });
+          
+          if ((row.RenewalVerified === true || row.RenewalVerified === "Yes") && 
+              (row.Status === "Renewal Verified" || row.Status === "Probation Verified")) {
+            actions.push(
+              <Tooltip title={`Share IMEI with admin`} arrow>
+                <GridActionsCellItem
+                  icon={<ShareIcon />}
+                  label="Share IMEI"
+                  className="textPrimary"
+                  onClick={() => { handleOpenIMEIModal(row)}}
+                  color="primary"
+                />
+              </Tooltip>
+            );
+          }
           return actions; // Return the array of actions (which might be empty)
         },
       },
   ];
 
-  const rows = dataAllocation?.map((handset, index) => ({
-    id: handset.id,
-    EmployeeCode: handset.EmployeeCode,
-    HandsetName: handset.HandsetName,
-    DevicePrice: handset.HandsetPrice,
-    ExccessPrice: handset.AccessFeePaid,
-    // StaffPrice: "N$ " + handset.StaffPrice || "N$" + 0,
-    // UpfrontPayment: "N$ " + handset.UpfrontPayment,
-    FixedAssetCode: handset.FixedAssetCode,
-    RequestDate: formatDate(handset.RequestDate),
-    AllocationDate: formatDate(handset.CollectionDate),
-    NewAllocationDate: formatDate(handset.RenewalDate),
-    Status: handset.status,
-  }));
+  const rows = dataAllocation?.map((handset, index) => {
+    console.log("Mapping handset:", {
+      id: handset.id,
+      RenewalVerified: handset.RenewalVerified,
+      Status: handset.status || handset.Status,
+      IMEINumber: handset.IMEINumber
+    });
+    
+    return {
+      id: handset.id,
+      EmployeeCode: handset.EmployeeCode,
+      HandsetName: handset.HandsetName,
+      DevicePrice: handset.HandsetPrice,
+      ExccessPrice: handset.AccessFeePaid,
+      // StaffPrice: "N$ " + handset.StaffPrice || "N$" + 0,
+      // UpfrontPayment: "N$ " + handset.UpfrontPayment,
+      FixedAssetCode: handset.FixedAssetCode,
+      RequestDate: formatDate(handset.RequestDate),
+      AllocationDate: formatDate(handset.CollectionDate),
+      NewAllocationDate: formatDate(handset.RenewalDate),
+      Status: handset.status || handset.Status,
+      RenewalVerified: handset.RenewalVerified ? "Yes" : "No",
+      IMEINumber: handset.IMEINumber || "Not provided",
+    };
+  });
   const today = new Date(); 
   const shouldShowNewHandsetButton =
   dataAllocation.length === 0 || dataAllocation[0].status === "Rejected" ||
@@ -269,6 +344,12 @@ const UserHandsets = () => {
             userData={userData}
             role={role}
           />
+          <ShareIMEIModal
+            open={imeiModalOpen}
+            handleClose={handleCloseIMEIModal}
+            handsetData={selectedHandsetForIMEI}
+            onShareIMEI={handleShareIMEI}
+          />
         </div>
         {/* Plan Table */}
         <div className="col-12 col-lg-11 ml-1 d-flex flex-column">
@@ -350,6 +431,29 @@ const UserHandsets = () => {
                         <PostAddIcon size={16} />
                       </>
                     )}
+                  </Button>
+                  
+                  {/* Test button for IMEI modal */}
+                  <Button
+                    style={{
+                      gap: "10px",
+                      height: "100%",
+                      backgroundColor: "#28a745",
+                      color: "#fff",
+                      padding: "8px",
+                      paddingLeft: "20px",
+                      paddingRight: "20px",
+                      borderRadius: "5px",
+                      marginLeft: "10px"
+                    }}
+                    onClick={() => {
+                      const testHandset = dataAllocation[0];
+                      if (testHandset) {
+                        handleOpenIMEIModal(testHandset);
+                      }
+                    }}
+                  >
+                    Test IMEI Modal
                   </Button>
                 </div>
               </div>

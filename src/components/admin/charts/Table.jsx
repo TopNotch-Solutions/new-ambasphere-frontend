@@ -61,7 +61,7 @@ const Table = () => {
       HandsetName: handset?.HandsetName,
       CollectionDate: formatDate(handset?.CollectionDate),
       RenewalDate: formatDate(handset?.RenewalDate),
-        Status: handset.status,
+      Status: handset.status || handset.Status,
     }));
   };
 

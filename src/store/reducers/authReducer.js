@@ -3,7 +3,14 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   isAuthenticated: false,
   user: {},
-  role: null,
+  role: (() => {
+    try {
+      const stored = localStorage.getItem("role");
+      return stored ? JSON.parse(stored) : null;
+    } catch (e) {
+      return null;
+    }
+  })(),
   token: null, // Store access token
   refreshToken: null, // Store refresh token
   rememberMe: false,
@@ -50,6 +57,9 @@ const authSlice = createSlice({
     },
     switchRole: (state,action) => {
       state.role = action.payload;
+      try {
+        localStorage.setItem("role", JSON.stringify(action.payload));
+      } catch (e) {}
     },
     refreshToken: (state, action) => {
       state.token = action.payload.token; // Update access token

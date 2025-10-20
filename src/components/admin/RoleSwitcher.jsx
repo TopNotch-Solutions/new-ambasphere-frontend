@@ -19,7 +19,7 @@ const RoleSwitcher = ({title}) => {
       } else if (currentUser.RoleID === 10) {
         dispatch(switchRole(10));
       } else if (currentUser.RoleID === 11) {
-        dispatch(switchRole());
+        dispatch(switchRole(11));
       } else {
         dispatch(switchRole(3));
       }

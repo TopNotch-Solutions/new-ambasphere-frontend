@@ -286,10 +286,8 @@ const AdminHandsets = () => {
       if (response.data.success) {
         const { approved, rejectionReason } = verificationData;
         const message = approved 
-          ? `✅ Probation verification successful!\n\nStatus updated to: ${response.data.handset?.Status || 'Probation Verified'}`
-          : `❌ Handset request rejected!\n\nReason: ${rejectionReason || 'Your probation is not yet completed.'}`;
-        
-        alert(message);
+          ? `Probation verification successful!\n\nStatus updated to: ${response.data.handset?.Status || 'Probation Verified'}`
+          : `Handset request rejected!\n\nReason: ${rejectionReason || 'Your probation is not yet completed.'}`;
         
         // Refresh the data
         const fetchData = async () => {

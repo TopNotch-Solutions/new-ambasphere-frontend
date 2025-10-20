@@ -17,6 +17,7 @@ import {
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { useSelector } from 'react-redux';
 
 const ProbationVerificationModal = ({ 
   open, 
@@ -28,6 +29,7 @@ const ProbationVerificationModal = ({
   const [rejectionReason, setRejectionReason] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const currentUser = useSelector((state) => state.auth.user);
 
   const handleSubmit = async () => {
     if (verificationDecision === 'reject' && !rejectionReason.trim()) {
@@ -41,6 +43,7 @@ const ProbationVerificationModal = ({
     try {
       const verificationData = {
         approved: verificationDecision === 'approve',
+        verifiedBy: currentUser.FullName,
         rejectionReason: verificationDecision === 'reject' ? rejectionReason : null
       };
 

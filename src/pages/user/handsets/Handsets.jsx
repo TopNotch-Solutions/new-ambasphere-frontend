@@ -432,29 +432,6 @@ const UserHandsets = () => {
                       </>
                     )}
                   </Button>
-                  
-                  {/* Test button for IMEI modal */}
-                  <Button
-                    style={{
-                      gap: "10px",
-                      height: "100%",
-                      backgroundColor: "#28a745",
-                      color: "#fff",
-                      padding: "8px",
-                      paddingLeft: "20px",
-                      paddingRight: "20px",
-                      borderRadius: "5px",
-                      marginLeft: "10px"
-                    }}
-                    onClick={() => {
-                      const testHandset = dataAllocation[0];
-                      if (testHandset) {
-                        handleOpenIMEIModal(testHandset);
-                      }
-                    }}
-                  >
-                    Test IMEI Modal
-                  </Button>
                 </div>
               </div>
                 )
